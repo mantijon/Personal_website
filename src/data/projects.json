@@ -1,0 +1,6 @@
+[
+  { "id": "ipak-yuli", "initials": "IY", "role": "Cybersecurity Analyst Intern", "title": "Ipak Yuli Bank Cybersecurity Internship", "dateRange": "2025", "status": "completed", "statusLabel": "Completed", "description": "", "tags": [], "url": "/projects/Intern.pdf", "images": ["/projects/Intern.pdf"] },
+  { "id": "volleyball", "initials": "VB", "role": "", "title": "Samarkand Presidential School Volleyball Team", "dateRange": "2022-present", "status": "completed", "statusLabel": "Completed", "description": "", "tags": [], "url": "#", "images": ["/projects/volleyball_1.png", "/projects/volleyball_2.png", "/projects/volleyball_3.png"] },
+  { "id": "shanbalik", "initials": "SE", "role": "Media Manager", "title": "Shanbalik Environmental Network", "dateRange": "2022-2024", "status": "completed", "statusLabel": "Completed", "description": "", "tags": [], "url": "#", "images": ["/projects/shanbalik_1.jpg", "/projects/shanbalik_2.jpg"] },
+  { "id": "media-collective", "initials": "SV", "role": "School Photographer", "title": "School Photographer and Videographer", "dateRange": "2024-present", "status": "completed", "statusLabel": "Completed", "description": "", "tags": [], "url": "#", "images": ["/projects/photo_1.jpg", "/projects/photo_2.jpg"] }
+]

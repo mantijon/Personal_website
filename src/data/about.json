@@ -1,0 +1,10 @@
+{
+  "name": "Islom Zokirov",
+  "bio": "Software developer and continuous learner based in [CITY]. I build tools that make everyday life more organized and document everything I pick up along the way — through books, projects, and deliberate practice.",
+  "focus": "Currently focused on backend systems, automation, and AI-assisted workflows. I believe in writing less code that does more.",
+  "socials": [
+    { "platform": "Telegram", "icon": "✈", "url": "https://t.me/ortafel" },
+    { "platform": "Instagram", "icon": "◎", "url": "https://instagram.com/i_s_a.lw" },
+    { "platform": "LinkedIn", "icon": "in", "url": "https://www.linkedin.com/in/islom-zokirov-3a91b62a1/" }
+  ]
+}

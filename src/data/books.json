@@ -1,0 +1,9 @@
+[
+  { "id": "rich-dad-poor-dad", "title": "Rich Dad Poor Dad", "author": "Robert Kiyosaki", "status": "finished", "totalPages": 336, "currentPage": 336, "finishedDate": null, "notes": "Notes coming soon.", "cover": "/covers/rich_dad.jpg" },
+  { "id": "richest-man-babylon", "title": "The Richest Man in Babylon", "author": "George S. Clason", "status": "finished", "totalPages": 194, "currentPage": 194, "finishedDate": null, "notes": "Notes coming soon.", "cover": "/covers/the-richest-man-in-babylon.jpg" },
+  { "id": "who-not-how", "title": "Who Not How", "author": "Dan Sullivan & Benjamin Hardy", "status": "finished", "totalPages": 208, "currentPage": 208, "finishedDate": null, "notes": "Notes coming soon.", "cover": "/covers/who_not_how.png" },
+  { "id": "eat-that-frog", "title": "Eat That Frog", "author": "Brian Tracy", "status": "finished", "totalPages": 144, "currentPage": 144, "finishedDate": null, "notes": "Notes coming soon.", "cover": "/covers/eat_that_frog.jpg" },
+  { "id": "atomic-habits", "title": "Atomic Habits", "author": "James Clear", "status": "finished", "totalPages": 320, "currentPage": 320, "finishedDate": null, "notes": "Small systems compound. I am collecting the practical ideas around environment design, identity, and making good defaults easier to follow.", "cover": "/covers/Atomic_habits.jpg" },
+  { "id": "mehrobdan-chayon", "title": "Mehrobdan Chayon", "author": "Abdulla Qodiriy", "status": "finished", "totalPages": 320, "currentPage": 320, "finishedDate": null, "notes": "Notes coming soon.", "cover": "/covers/Mehrobdan_chayon.jpg" },
+  { "id": "nineteen-eighty-four", "title": "1984", "author": "George Orwell", "status": "reading", "startedDate": "2026-07", "totalPages": 327, "currentPage": 278, "notes": "Currently reading. Notes will be added as I finish the book.", "cover": "/covers/1984.jpg" }
+]
