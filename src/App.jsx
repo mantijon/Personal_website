@@ -296,7 +296,6 @@ function ProjectCard({ project, animationDelay }) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
   const isPdf = project.url?.endsWith('.pdf')
-  const linkLabel = isPdf ? 'View PDF Document' : 'View Details'
 
   const mainImage = hasImages ? project.images[activeImgIndex] : null
   const isMainImagePdf = mainImage?.toLowerCase().endsWith('.pdf')
@@ -368,6 +367,7 @@ function ProjectCard({ project, animationDelay }) {
         </div>
       )}
 
+      {project.initials && <div className="project-monogram">{project.initials}</div>}
       <div className="project-topline"><span>{project.dateRange}</span><span className={`status ${project.status}`}>{project.statusLabel}</span></div>
       {project.role && <p className="project-role">{project.role}</p>}
       <h2>{project.title}</h2>
