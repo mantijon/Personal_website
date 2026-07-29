@@ -72,6 +72,7 @@ function BrandIcon({ platform }) {
 function HomePage() {
   const [firstName, ...lastNameParts] = about.name.split(' ')
   const lastName = lastNameParts.join(' ')
+  const bio = about.bio.replace('{city}', about.city)
 
   return (
     <main className="home-page page-shell">
@@ -80,7 +81,7 @@ function HomePage() {
         <h1 id="home-title">{firstName}<br /><em>{lastName}.</em></h1>
         <div className="gold-rule" />
         <div className="intro-copy">
-          <p>{about.bio}</p>
+          <p>{bio}</p>
           <p>{about.focus}</p>
         </div>
         <div className="social-row">
@@ -92,6 +93,9 @@ function HomePage() {
           ))}
         </div>
       </section>
+      <figure className="home-portrait">
+        <img src="/Islom.JPG" alt="Islom Zokirov" />
+      </figure>
     </main>
   )
 }
@@ -113,21 +117,33 @@ function FilterBar({ options, value, onChange }) {
   )
 }
 
+function formatBookDate(date) {
+  if (!date) return null
+  const [year, month] = date.split('-')
+  if (!month) return year
+  return new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric' }).format(new Date(Date.UTC(year, Number(month) - 1, 1)))
+}
+
+function getBookStatusMeta(book) {
+  if (book.status === 'finished') return book.finishedDate ? `Finished · ${formatBookDate(book.finishedDate)}` : 'Finished'
+  if (book.status === 'reading') return `Reading · Started ${formatBookDate(book.startedDate)}`
+  return 'Want to Read'
+}
+
 function BookCover({ book, selected, onSelect }) {
+  const shelfStatus = book.status === 'finished' ? null : getBookStatusMeta(book)
+
   return (
     <button className={`book-item ${selected ? 'selected' : ''}`} type="button" onClick={() => onSelect(book.id)}>
       <img src={book.cover} alt={`${book.title} cover`} />
-      <span>{book.title}</span>
+      {shelfStatus && <span className={`book-status ${book.status}`}>{shelfStatus}</span>}
+      <span className="book-title">{book.title}</span>
     </button>
   )
 }
 
 function NotesPanel({ book, onClose, panelRef }) {
-  const bookMeta = book.status === 'finished'
-    ? book.finishedDate ? `Finished · ${book.finishedDate}` : 'Finished'
-    : book.status === 'reading'
-      ? `Reading · Started ${book.startedDate}`
-      : 'Want to Read'
+  const bookMeta = getBookStatusMeta(book)
 
   return (
     <aside className="notes-panel" ref={panelRef} aria-label={`Notes for ${book.title}`}>
@@ -140,7 +156,7 @@ function NotesPanel({ book, onClose, panelRef }) {
         <h3>{book.title}</h3>
         <p className="muted">{book.author}</p>
         <div className="small-rule" />
-        <p className="notes-text">{book.notes}</p>
+        {book.notes ? <p className="notes-text">{book.notes}</p> : <p className="no-notes-state">No notes yet.</p>}
         <p className="book-meta">{bookMeta}</p>
       </div>
     </aside>
@@ -157,7 +173,7 @@ function CurrentlyReading({ book }) {
       <div className="reading-details">
         <Eyebrow>Currently Reading</Eyebrow>
         <h2>{book.title}</h2>
-        <p className="muted">{book.author} · Started {book.startedDate}</p>
+        <p className="muted">{book.author} · Started {formatBookDate(book.startedDate)}</p>
         <div className="progress-row">
           <div className="progress-track"><span style={{ width: `${progress}%` }} /></div>
           <span>{progress}%</span>
@@ -176,16 +192,42 @@ function BooksPage() {
   const resumeTimerRef = useRef(null)
   const currentBook = books.find((book) => book.status === 'reading')
 
+  // Infinite circular carousel: render 3 copies, start at middle set, loop seamlessly
+  const oneSetWidthRef = useRef(0)
+
   useEffect(() => {
+    const shelf = shelfRef.current
+    if (!shelf) return
+    // Measure the width of one set of books (total scrollWidth / 3)
+    const measureSet = () => {
+      oneSetWidthRef.current = shelf.scrollWidth / 3
+      // Start at the beginning of the middle (2nd) set
+      shelf.scrollLeft = oneSetWidthRef.current
+    }
+    measureSet()
+
+    const loopScroll = () => {
+      const oneSet = oneSetWidthRef.current
+      if (oneSet <= 0) return
+      // If scrolled past the middle set (into 3rd copy), jump back to 1st copy equivalent
+      if (shelf.scrollLeft >= oneSet * 2) {
+        shelf.scrollLeft -= oneSet
+      }
+      // If scrolled before the 1st set (into 1st copy start), jump forward to 2nd copy equivalent
+      else if (shelf.scrollLeft <= 0) {
+        shelf.scrollLeft += oneSet
+      }
+    }
+
+    shelf.addEventListener('scroll', loopScroll)
+
     const interval = window.setInterval(() => {
-      const shelf = shelfRef.current
-      if (!shelf || pausedRef.current || shelf.scrollWidth <= shelf.clientWidth) return
-      const maxScroll = shelf.scrollWidth - shelf.clientWidth
-      if (shelf.scrollLeft >= maxScroll - 1) shelf.scrollTo({ left: 0 })
-      else shelf.scrollLeft += 1
+      if (pausedRef.current || shelf.scrollWidth <= shelf.clientWidth) return
+      shelf.scrollLeft += 1
     }, 38)
 
     return () => {
+      shelf.removeEventListener('scroll', loopScroll)
       window.clearInterval(interval)
       window.clearTimeout(resumeTimerRef.current)
     }
@@ -215,6 +257,9 @@ function BooksPage() {
     shelfRef.current?.scrollBy({ left: amount, behavior: 'smooth' })
   }
 
+  // Create 3 copies of the books array for seamless infinite loop
+  const tripleBooks = [...books, ...books, ...books]
+
   return (
     <main className="page-shell inner-page">
       <div className="page-heading">
@@ -225,7 +270,7 @@ function BooksPage() {
       <div className="shelf-wrap">
         <button className="shelf-arrow left" type="button" onClick={() => scrollShelf(-320)} aria-label="Scroll books left">‹</button>
         <div className="book-shelf" ref={shelfRef}>
-          {books.map((book) => <BookCover key={book.id} book={book} selected={book.id === selectedBook} onSelect={selectBook} />)}
+          {tripleBooks.map((book, i) => <BookCover key={`${book.id}-${i}`} book={book} selected={book.id === selectedBook} onSelect={selectBook} />)}
         </div>
         <button className="shelf-arrow right" type="button" onClick={() => scrollShelf(320)} aria-label="Scroll books right">›</button>
       </div>
@@ -365,6 +410,7 @@ function ProjectCard({ project }) {
       <div className="project-topline"><span>{project.dateRange}</span><span className={`status ${project.status}`}>{project.statusLabel}</span></div>
       {project.role && <p className="project-role">{project.role}</p>}
       <h2>{project.title}</h2>
+      <p className="project-description">{project.description}</p>
       {project.tags?.length > 0 && <div className="tag-list">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>}
       {isPdf && (
         <a className="learn-link" href={project.url} target="_blank" rel="noreferrer">

@@ -1,7 +1,8 @@
 {
   "name": "Islom Zokirov",
-  "bio": "Software developer and continuous learner based in [CITY]. I build tools that make everyday life more organized and document everything I pick up along the way — through books, projects, and deliberate practice.",
-  "focus": "Currently focused on backend systems, automation, and AI-assisted workflows. I believe in writing less code that does more.",
+  "city": "Samarkand",
+  "bio": "I'm a cybersecurity student, and in my free time I vibecode — building things like websites, Telegram bots, and small platforms. I got into reading books a couple of years ago, and it became a habit. I play Dota 2 and CS2 when I get the chance, and I try to show up for volunteering events when I can.",
+  "focus": "Right now I'm deep in cybersecurity and figuring out how to implement AI into my life to be more productive.",
   "socials": [
     { "platform": "Telegram", "icon": "✈", "url": "https://t.me/ortafel" },
     { "platform": "Instagram", "icon": "◎", "url": "https://instagram.com/i_s_a.lw" },
