@@ -130,11 +130,11 @@ function getBookStatusMeta(book) {
   return 'Want to Read'
 }
 
-function BookCover({ book, selected, onSelect }) {
+function BookCover({ book, selected, onSelect, animationDelay }) {
   const shelfStatus = book.status === 'finished' ? null : getBookStatusMeta(book)
 
   return (
-    <button className={`book-item ${selected ? 'selected' : ''}`} type="button" onClick={() => onSelect(book.id)}>
+    <button className={`book-item ${selected ? 'selected' : ''}`} type="button" onClick={() => onSelect(book.id)} style={{ animationDelay }}>
       <img src={book.cover} alt={`${book.title} cover`} />
       {shelfStatus && <span className={`book-status ${book.status}`}>{shelfStatus}</span>}
       <span className="book-title">{book.title}</span>
@@ -164,8 +164,22 @@ function NotesPanel({ book, onClose, panelRef }) {
 }
 
 function CurrentlyReading({ book }) {
+  const progress = book ? Math.round((book.currentPage / book.totalPages) * 100) : 0
+  const [displayedProgress, setDisplayedProgress] = useState(0)
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reducedMotion) {
+      setDisplayedProgress(progress)
+      return undefined
+    }
+
+    setDisplayedProgress(0)
+    const frame = window.requestAnimationFrame(() => setDisplayedProgress(progress))
+    return () => window.cancelAnimationFrame(frame)
+  }, [progress])
+
   if (!book) return null
-  const progress = Math.round((book.currentPage / book.totalPages) * 100)
 
   return (
     <section className="reading-card" aria-label="Currently reading">
@@ -175,7 +189,7 @@ function CurrentlyReading({ book }) {
         <h2>{book.title}</h2>
         <p className="muted">{book.author} · Started {formatBookDate(book.startedDate)}</p>
         <div className="progress-row">
-          <div className="progress-track"><span style={{ width: `${progress}%` }} /></div>
+          <div className="progress-track"><span style={{ width: `${displayedProgress}%` }} /></div>
           <span>{progress}%</span>
         </div>
       </div>
@@ -188,50 +202,7 @@ function BooksPage() {
   const [selectionVersion, setSelectionVersion] = useState(0)
   const shelfRef = useRef(null)
   const notesPanelRef = useRef(null)
-  const pausedRef = useRef(false)
-  const resumeTimerRef = useRef(null)
   const currentBook = books.find((book) => book.status === 'reading')
-
-  // Infinite circular carousel: render 3 copies, start at middle set, loop seamlessly
-  const oneSetWidthRef = useRef(0)
-
-  useEffect(() => {
-    const shelf = shelfRef.current
-    if (!shelf) return
-    // Measure the width of one set of books (total scrollWidth / 3)
-    const measureSet = () => {
-      oneSetWidthRef.current = shelf.scrollWidth / 3
-      // Start at the beginning of the middle (2nd) set
-      shelf.scrollLeft = oneSetWidthRef.current
-    }
-    measureSet()
-
-    const loopScroll = () => {
-      const oneSet = oneSetWidthRef.current
-      if (oneSet <= 0) return
-      // If scrolled past the middle set (into 3rd copy), jump back to 1st copy equivalent
-      if (shelf.scrollLeft >= oneSet * 2) {
-        shelf.scrollLeft -= oneSet
-      }
-      // If scrolled before the 1st set (into 1st copy start), jump forward to 2nd copy equivalent
-      else if (shelf.scrollLeft <= 0) {
-        shelf.scrollLeft += oneSet
-      }
-    }
-
-    shelf.addEventListener('scroll', loopScroll)
-
-    const interval = window.setInterval(() => {
-      if (pausedRef.current || shelf.scrollWidth <= shelf.clientWidth) return
-      shelf.scrollLeft += 1
-    }, 38)
-
-    return () => {
-      shelf.removeEventListener('scroll', loopScroll)
-      window.clearInterval(interval)
-      window.clearTimeout(resumeTimerRef.current)
-    }
-  }, [])
 
   useEffect(() => {
     if (!selectedBook) return undefined
@@ -241,24 +212,14 @@ function BooksPage() {
     return () => window.cancelAnimationFrame(frame)
   }, [selectedBook, selectionVersion])
 
-  const pauseAutoScroll = () => {
-    pausedRef.current = true
-    window.clearTimeout(resumeTimerRef.current)
-    resumeTimerRef.current = window.setTimeout(() => { pausedRef.current = false }, 3500)
-  }
-
   const selectBook = (id) => {
     setSelectedBook(id)
     setSelectionVersion((version) => version + 1)
   }
   const selected = books.find((book) => book.id === selectedBook)
   const scrollShelf = (amount) => {
-    pauseAutoScroll()
     shelfRef.current?.scrollBy({ left: amount, behavior: 'smooth' })
   }
-
-  // Create 3 copies of the books array for seamless infinite loop
-  const tripleBooks = [...books, ...books, ...books]
 
   return (
     <main className="page-shell inner-page">
@@ -270,7 +231,7 @@ function BooksPage() {
       <div className="shelf-wrap">
         <button className="shelf-arrow left" type="button" onClick={() => scrollShelf(-320)} aria-label="Scroll books left">‹</button>
         <div className="book-shelf" ref={shelfRef}>
-          {tripleBooks.map((book, i) => <BookCover key={`${book.id}-${i}`} book={book} selected={book.id === selectedBook} onSelect={selectBook} />)}
+          {books.map((book, index) => <BookCover key={book.id} book={book} selected={book.id === selectedBook} onSelect={selectBook} animationDelay={`${index * 60}ms`} />)}
         </div>
         <button className="shelf-arrow right" type="button" onClick={() => scrollShelf(320)} aria-label="Scroll books right">›</button>
       </div>
@@ -329,7 +290,7 @@ function Lightbox({ images, initialIndex, onClose }) {
   )
 }
 
-function ProjectCard({ project }) {
+function ProjectCard({ project, animationDelay }) {
   const hasImages = project.images && project.images.length > 0
   const [activeImgIndex, setActiveImgIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
@@ -341,7 +302,7 @@ function ProjectCard({ project }) {
   const isMainImagePdf = mainImage?.toLowerCase().endsWith('.pdf')
 
   return (
-    <article className="project-card">
+    <article className="project-card" style={{ animationDelay }}>
       {hasImages && (
         <div className="project-gallery-container">
           <div className="project-main-image-wrapper" onClick={() => setLightboxOpen(true)}>
@@ -440,7 +401,7 @@ function ProjectsPage() {
         <FilterBar options={projectFilters} value={filter} onChange={setFilter} />
       </div>
       <section className="project-grid" aria-label="Projects">
-        {visibleProjects.map((project) => <ProjectCard key={project.id} project={project} />)}
+        {visibleProjects.map((project, index) => <ProjectCard key={project.id} project={project} animationDelay={`${index * 80}ms`} />)}
       </section>
     </main>
   )
@@ -473,5 +434,5 @@ export default function App() {
     return () => { window.removeEventListener('scroll', updateProgress); window.removeEventListener('resize', updateProgress) }
   }, [route])
 
-  return <div className="app"><div className="scroll-progress" style={{ height: `${scrollProgress}%` }} aria-hidden="true" /><Header route={route} onNavigate={navigate} />{route === 'home' && <HomePage />}{route === 'books' && <BooksPage />}{route === 'projects' && <ProjectsPage />}</div>
+  return <div className="app"><div className="scroll-progress" style={{ height: `${scrollProgress}%` }} aria-hidden="true" /><Header route={route} onNavigate={navigate} /><div className="route-view" key={route}>{route === 'home' && <HomePage />}{route === 'books' && <BooksPage />}{route === 'projects' && <ProjectsPage />}</div></div>
 }

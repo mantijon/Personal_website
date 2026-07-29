@@ -1,4 +1,4 @@
-# Alex Doe Personal Website
+# Islom Zokirov Personal Website
 
 A static React + Vite personal website built from the supplied Figma Make reference.
 
