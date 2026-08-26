@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap');
 
 :root { font-family: 'DM Sans', Arial, sans-serif; color: #f2eee7; background: #0d0d0d; font-synthesis: none; --bg: #0d0d0d; --panel: #151515; --line: #282725; --text: #f2eee7; --muted: #a29d95; --gold: #caa25d; --blue: #7d9fdb; }
 * { box-sizing: border-box; }

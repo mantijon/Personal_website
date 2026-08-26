@@ -94,7 +94,7 @@ function HomePage() {
         </div>
       </section>
       <figure className="home-portrait">
-        <img src="/Islom.JPG" alt="Islom Zokirov" />
+        <img src="/Islom.JPG" alt="Islom Zokirov" width="1400" height="933" fetchPriority="high" decoding="async" />
       </figure>
     </main>
   )
@@ -135,7 +135,7 @@ function BookCover({ book, selected, onSelect, animationDelay }) {
 
   return (
     <button className={`book-item ${selected ? 'selected' : ''}`} type="button" onClick={() => onSelect(book.id)} style={{ animationDelay }}>
-      <img src={book.cover} alt={`${book.title} cover`} />
+      <img src={book.cover} alt={`${book.title} cover`} width="164" height="219" loading="lazy" decoding="async" />
       {shelfStatus && <span className={`book-status ${book.status}`}>{shelfStatus}</span>}
       <span className="book-title">{book.title}</span>
     </button>
@@ -147,7 +147,7 @@ function NotesPanel({ book, onClose, panelRef }) {
 
   return (
     <aside className="notes-panel" ref={panelRef} aria-label={`Notes for ${book.title}`}>
-      <img src={book.cover} alt="" />
+      <img src={book.cover} alt="" width="164" height="219" loading="lazy" decoding="async" />
       <div className="notes-content">
         <div className="notes-heading">
           <Eyebrow>Notes</Eyebrow>
@@ -183,7 +183,7 @@ function CurrentlyReading({ book }) {
 
   return (
     <section className="reading-card" aria-label="Currently reading">
-      <img src={book.cover} alt={`${book.title} cover`} />
+      <img src={book.cover} alt={`${book.title} cover`} width="91" height="118" decoding="async" />
       <div className="reading-details">
         <Eyebrow>Currently Reading</Eyebrow>
         <h2>{book.title}</h2>
@@ -279,7 +279,7 @@ function Lightbox({ images, initialIndex, onClose }) {
         {isPdf ? (
           <iframe src={images[currentIndex]} className="lightbox-pdf-viewer" title="PDF Document" />
         ) : (
-          <img src={images[currentIndex]} alt={`Project image ${currentIndex + 1}`} />
+          <img src={images[currentIndex]} alt={`Project image ${currentIndex + 1}`} decoding="async" />
         )}
         <div className="lightbox-caption">{currentIndex + 1} / {images.length}</div>
       </div>
@@ -296,6 +296,7 @@ function ProjectCard({ project, animationDelay }) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
   const isPdf = project.url?.endsWith('.pdf')
+  const hasLiveLink = Boolean(project.url) && project.url !== '#' && !isPdf
 
   const mainImage = hasImages ? project.images[activeImgIndex] : null
   const isMainImagePdf = mainImage?.toLowerCase().endsWith('.pdf')
@@ -317,7 +318,7 @@ function ProjectCard({ project, animationDelay }) {
                 <span className="pdf-preview-subtext">Click to view certificate</span>
               </div>
             ) : (
-              <img src={mainImage} alt={project.title} className="project-main-image" />
+              <img src={mainImage} alt={project.title} className="project-main-image" width="1400" height="875" loading="lazy" decoding="async" />
             )}
             <div className="image-zoom-overlay">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="zoom-icon">
@@ -345,7 +346,7 @@ function ProjectCard({ project, animationDelay }) {
                         <span>PDF</span>
                       </div>
                     ) : (
-                      <img src={img} alt="" />
+                      <img src={img} alt="" width="72" height="52" loading="lazy" decoding="async" />
                     )}
                   </button>
                 )
@@ -376,6 +377,11 @@ function ProjectCard({ project, animationDelay }) {
       {isPdf && (
         <a className="learn-link" href={project.url} target="_blank" rel="noreferrer">
           View PDF Document <span aria-hidden="true">↗</span>
+        </a>
+      )}
+      {hasLiveLink && (
+        <a className="learn-link" href={project.url} target="_blank" rel="noreferrer">
+          Visit Live Site <span aria-hidden="true">↗</span>
         </a>
       )}
 
