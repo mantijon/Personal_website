@@ -386,12 +386,10 @@ function ProjectCard({ project, animationDelay }) {
         </div>
       )}
 
-      {project.initials && <div className="project-monogram">{project.initials}</div>}
       <div className="project-topline"><span>{project.dateRange}</span><span className={`status ${project.status}`}>{project.statusLabel}</span></div>
       {project.role && <p className="project-role">{project.role}</p>}
       <h2>{project.title}</h2>
       <p className="project-description">{project.description}</p>
-      {project.tags?.length > 0 && <div className="tag-list">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>}
       {isPdf && (
         <a className="learn-link" href={project.url} target="_blank" rel="noreferrer">
           View PDF Document <span aria-hidden="true">↗</span>
