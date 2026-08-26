@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import about from './data/about.json'
 import books from './data/books.json'
 import projects from './data/projects.json'
+import imageVariants from './data/image-variants.json'
 
 const routes = ['home', 'books', 'projects']
 const projectFilters = ['all', 'completed', 'in-progress']
@@ -9,6 +10,23 @@ const projectFilters = ['all', 'completed', 'in-progress']
 function getRoute() {
   const route = window.location.hash.replace('#', '')
   return routes.includes(route) ? route : 'home'
+}
+
+// Serves a WebP derivative sized to how the image actually renders, falling back
+// to the original file. `variant` is tried in order, so a missing size degrades
+// to the next best one. See scripts/generate-image-variants.sh.
+function Img({ src, variant, alt, ...rest }) {
+  const available = imageVariants[src]
+  const wanted = Array.isArray(variant) ? variant : [variant]
+  const webp = available && wanted.map((name) => available[name]).find(Boolean)
+
+  // Always a <picture> so the DOM shape stays consistent for the CSS.
+  return (
+    <picture>
+      {webp && <source type="image/webp" srcSet={webp} />}
+      <img src={src} alt={alt} {...rest} />
+    </picture>
+  )
 }
 
 function Header({ route, onNavigate }) {
@@ -94,7 +112,7 @@ function HomePage() {
         </div>
       </section>
       <figure className="home-portrait">
-        <img src="/Islom.JPG" alt="Islom Zokirov" width="1400" height="933" fetchPriority="high" decoding="async" />
+        <Img src="/Islom.JPG" variant="hero" alt="Islom Zokirov" width="1400" height="933" fetchPriority="high" decoding="async" />
       </figure>
     </main>
   )
@@ -135,7 +153,7 @@ function BookCover({ book, selected, onSelect, animationDelay }) {
 
   return (
     <button className={`book-item ${selected ? 'selected' : ''}`} type="button" onClick={() => onSelect(book.id)} style={{ animationDelay }}>
-      <img src={book.cover} alt={`${book.title} cover`} width="164" height="219" loading="lazy" decoding="async" />
+      <Img src={book.cover} variant="sm" alt={`${book.title} cover`} width="164" height="219" loading="lazy" decoding="async" />
       {shelfStatus && <span className={`book-status ${book.status}`}>{shelfStatus}</span>}
       <span className="book-title">{book.title}</span>
     </button>
@@ -147,7 +165,7 @@ function NotesPanel({ book, onClose, panelRef }) {
 
   return (
     <aside className="notes-panel" ref={panelRef} aria-label={`Notes for ${book.title}`}>
-      <img src={book.cover} alt="" width="164" height="219" loading="lazy" decoding="async" />
+      <Img src={book.cover} variant="sm" alt="" width="164" height="219" loading="lazy" decoding="async" />
       <div className="notes-content">
         <div className="notes-heading">
           <Eyebrow>Notes</Eyebrow>
@@ -183,7 +201,7 @@ function CurrentlyReading({ book }) {
 
   return (
     <section className="reading-card" aria-label="Currently reading">
-      <img src={book.cover} alt={`${book.title} cover`} width="91" height="118" decoding="async" />
+      <Img src={book.cover} variant="sm" alt={`${book.title} cover`} width="91" height="118" decoding="async" />
       <div className="reading-details">
         <Eyebrow>Currently Reading</Eyebrow>
         <h2>{book.title}</h2>
@@ -279,7 +297,7 @@ function Lightbox({ images, initialIndex, onClose }) {
         {isPdf ? (
           <iframe src={images[currentIndex]} className="lightbox-pdf-viewer" title="PDF Document" />
         ) : (
-          <img src={images[currentIndex]} alt={`Project image ${currentIndex + 1}`} decoding="async" />
+          <Img src={images[currentIndex]} variant={['lg', 'md']} alt={`Project image ${currentIndex + 1}`} decoding="async" />
         )}
         <div className="lightbox-caption">{currentIndex + 1} / {images.length}</div>
       </div>
@@ -318,7 +336,7 @@ function ProjectCard({ project, animationDelay }) {
                 <span className="pdf-preview-subtext">Click to view certificate</span>
               </div>
             ) : (
-              <img src={mainImage} alt={project.title} className="project-main-image" width="1400" height="875" loading="lazy" decoding="async" />
+              <Img src={mainImage} variant="md" alt={project.title} className="project-main-image" width="1400" height="875" loading="lazy" decoding="async" />
             )}
             <div className="image-zoom-overlay">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="zoom-icon">
@@ -346,7 +364,7 @@ function ProjectCard({ project, animationDelay }) {
                         <span>PDF</span>
                       </div>
                     ) : (
-                      <img src={img} alt="" width="72" height="52" loading="lazy" decoding="async" />
+                      <Img src={img} variant="thumb" alt="" width="72" height="52" loading="lazy" decoding="async" />
                     )}
                   </button>
                 )

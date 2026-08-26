@@ -1,0 +1,83 @@
+{
+  "/Islom.JPG": {
+    "hero": "/Islom-hero.webp"
+  },
+  "/covers/1984.jpg": {
+    "sm": "/covers/1984-sm.webp"
+  },
+  "/covers/And_then_there_were_none.jpg": {
+    "sm": "/covers/And_then_there_were_none-sm.webp"
+  },
+  "/covers/Atomic_habits.jpg": {
+    "sm": "/covers/Atomic_habits-sm.webp"
+  },
+  "/covers/Mehrobdan_chayon.jpg": {
+    "sm": "/covers/Mehrobdan_chayon-sm.webp"
+  },
+  "/covers/animal_farm.jpeg": {
+    "sm": "/covers/animal_farm-sm.webp"
+  },
+  "/covers/eat_that_frog.jpg": {
+    "sm": "/covers/eat_that_frog-sm.webp"
+  },
+  "/covers/rich_dad.jpg": {
+    "sm": "/covers/rich_dad-sm.webp"
+  },
+  "/covers/the-richest-man-in-babylon.jpg": {
+    "sm": "/covers/the-richest-man-in-babylon-sm.webp"
+  },
+  "/projects/CareerQuest.jpg": {
+    "md": "/projects/CareerQuest-md.webp",
+    "thumb": "/projects/CareerQuest-thumb.webp"
+  },
+  "/projects/club_1.jpg": {
+    "md": "/projects/club_1-md.webp",
+    "thumb": "/projects/club_1-thumb.webp"
+  },
+  "/projects/club_2.jpg": {
+    "lg": "/projects/club_2-lg.webp",
+    "md": "/projects/club_2-md.webp",
+    "thumb": "/projects/club_2-thumb.webp"
+  },
+  "/projects/medly.jpg": {
+    "lg": "/projects/medly-lg.webp",
+    "md": "/projects/medly-md.webp",
+    "thumb": "/projects/medly-thumb.webp"
+  },
+  "/projects/medly2.jpg": {
+    "lg": "/projects/medly2-lg.webp",
+    "md": "/projects/medly2-md.webp",
+    "thumb": "/projects/medly2-thumb.webp"
+  },
+  "/projects/photo_1.jpg": {
+    "lg": "/projects/photo_1-lg.webp",
+    "md": "/projects/photo_1-md.webp",
+    "thumb": "/projects/photo_1-thumb.webp"
+  },
+  "/projects/photo_2.jpg": {
+    "lg": "/projects/photo_2-lg.webp",
+    "md": "/projects/photo_2-md.webp",
+    "thumb": "/projects/photo_2-thumb.webp"
+  },
+  "/projects/shanbalik_1.jpg": {
+    "lg": "/projects/shanbalik_1-lg.webp",
+    "md": "/projects/shanbalik_1-md.webp",
+    "thumb": "/projects/shanbalik_1-thumb.webp"
+  },
+  "/projects/shanbalik_2.jpg": {
+    "md": "/projects/shanbalik_2-md.webp",
+    "thumb": "/projects/shanbalik_2-thumb.webp"
+  },
+  "/projects/volleyball_1.jpg": {
+    "md": "/projects/volleyball_1-md.webp",
+    "thumb": "/projects/volleyball_1-thumb.webp"
+  },
+  "/projects/volleyball_2.jpg": {
+    "md": "/projects/volleyball_2-md.webp",
+    "thumb": "/projects/volleyball_2-thumb.webp"
+  },
+  "/projects/volleyball_3.jpg": {
+    "md": "/projects/volleyball_3-md.webp",
+    "thumb": "/projects/volleyball_3-thumb.webp"
+  }
+}
