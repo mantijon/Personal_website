@@ -153,7 +153,7 @@ function BookCover({ book, selected, onSelect, animationDelay }) {
 
   return (
     <button className={`book-item ${selected ? 'selected' : ''}`} type="button" onClick={() => onSelect(book.id)} style={{ animationDelay }}>
-      <Img src={book.cover} variant="sm" alt={`${book.title} cover`} width="164" height="219" loading="lazy" decoding="async" />
+      <Img src={book.cover} variant="sm" alt={`${book.title} cover`} width="164" height="219" decoding="async" />
       {shelfStatus && <span className={`book-status ${book.status}`}>{shelfStatus}</span>}
       <span className="book-title">{book.title}</span>
     </button>
@@ -165,7 +165,7 @@ function NotesPanel({ book, onClose, panelRef }) {
 
   return (
     <aside className="notes-panel" ref={panelRef} aria-label={`Notes for ${book.title}`}>
-      <Img src={book.cover} variant="sm" alt="" width="164" height="219" loading="lazy" decoding="async" />
+      <Img src={book.cover} variant="sm" alt="" width="164" height="219" decoding="async" />
       <div className="notes-content">
         <div className="notes-heading">
           <Eyebrow>Notes</Eyebrow>
@@ -308,7 +308,7 @@ function Lightbox({ images, initialIndex, onClose }) {
   )
 }
 
-function ProjectCard({ project, animationDelay }) {
+function ProjectCard({ project, animationDelay, eager }) {
   const hasImages = project.images && project.images.length > 0
   const [activeImgIndex, setActiveImgIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
@@ -336,7 +336,7 @@ function ProjectCard({ project, animationDelay }) {
                 <span className="pdf-preview-subtext">Click to view certificate</span>
               </div>
             ) : (
-              <Img src={mainImage} variant="md" alt={project.title} className="project-main-image" width="1400" height="875" loading="lazy" decoding="async" />
+              <Img src={mainImage} variant="md" alt={project.title} className="project-main-image" width="1400" height="875" loading={eager ? 'eager' : 'lazy'} fetchPriority={eager ? 'high' : undefined} decoding="async" />
             )}
             <div className="image-zoom-overlay">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="zoom-icon">
@@ -423,7 +423,7 @@ function ProjectsPage() {
         <FilterBar options={projectFilters} value={filter} onChange={setFilter} />
       </div>
       <section className="project-grid" aria-label="Projects">
-        {visibleProjects.map((project, index) => <ProjectCard key={project.id} project={project} animationDelay={`${index * 80}ms`} />)}
+        {visibleProjects.map((project, index) => <ProjectCard key={project.id} project={project} animationDelay={`${index * 80}ms`} eager={index < 2} />)}
       </section>
     </main>
   )
