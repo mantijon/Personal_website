@@ -137,8 +137,11 @@ function FilterBar({ options, value, onChange }) {
 
 function formatBookDate(date) {
   if (!date) return null
-  const [year, month] = date.split('-')
+  const [year, month, day] = date.split('-')
   if (!month) return year
+  if (day) {
+    return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(Date.UTC(year, Number(month) - 1, Number(day))))
+  }
   return new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric' }).format(new Date(Date.UTC(year, Number(month) - 1, 1)))
 }
 
