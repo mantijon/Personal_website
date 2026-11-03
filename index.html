@@ -3,24 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--legacy-hash-script-->
     <meta name="theme-color" content="#0d0d0d" />
     <link rel="icon" type="image/jpeg" href="/title.jpg" />
 
-    <!-- Fonts: linked here (not @import-ed from CSS) so the browser can start
-         fetching them during HTML parse instead of after the stylesheet loads. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" />
+    <!-- Fonts are self-hosted via @font-face in src/styles.css. The hero portrait
+         needs no preload: each page's HTML is pre-rendered, so the browser finds
+         the <img fetchpriority="high"> on the homepage straight away (and other
+         pages no longer download it). -->
 
-    <!-- Hero portrait is the largest paint on the landing page. This must match
-         what <picture> actually selects; the type attribute makes browsers
-         without WebP skip the preload and fall back to the JPEG. -->
-    <link rel="preload" as="image" href="/Islom-hero.webp" type="image/webp" fetchpriority="high" />
-
-    <title>Islom Zokirov</title>
+    <!-- Filled per page at build time: title, description, canonical, Open Graph. -->
+    <!--app-head-->
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><!--app-html--></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

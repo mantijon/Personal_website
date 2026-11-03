@@ -1,16 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import about from './data/about.json'
 import books from './data/books.json'
 import projects from './data/projects.json'
 import imageVariants from './data/image-variants.json'
+import { Link, RouterContext } from './router'
+import { ROUTES, resolvePage } from './routes'
+import { applyHead, getHead } from './seo'
 
 const routes = ['home', 'books', 'projects']
 const projectFilters = ['all', 'completed', 'in-progress']
-
-function getRoute() {
-  const route = window.location.hash.replace('#', '')
-  return routes.includes(route) ? route : 'home'
-}
 
 // Serves a WebP derivative sized to how the image actually renders, falling back
 // to the original file. `variant` is tried in order, so a missing size degrades
@@ -29,30 +27,26 @@ function Img({ src, variant, alt, ...rest }) {
   )
 }
 
-function Header({ route, onNavigate }) {
+function Header({ route }) {
   const [menuOpen, setMenuOpen] = useState(false)
-
-  const navigate = (nextRoute) => {
-    setMenuOpen(false)
-    onNavigate(nextRoute)
-  }
 
   return (
     <header className="site-header">
-      <a className="site-mark" href="#home" onClick={() => navigate('home')}>ISA</a>
+      <Link className="site-mark" to={ROUTES.home} onClick={() => setMenuOpen(false)}>ISA</Link>
       <button className="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>
         <span /><span />
       </button>
       <nav className={menuOpen ? 'open' : ''} aria-label="Main navigation">
         {routes.map((item) => (
-          <a
+          <Link
             key={item}
             className={route === item ? 'active' : ''}
-            href={`#${item}`}
-            onClick={() => navigate(item)}
+            aria-current={route === item ? 'page' : undefined}
+            to={ROUTES[item]}
+            onClick={() => setMenuOpen(false)}
           >
             {item[0].toUpperCase() + item.slice(1)}
-          </a>
+          </Link>
         ))}
       </nav>
     </header>
@@ -140,9 +134,9 @@ function formatBookDate(date) {
   const [year, month, day] = date.split('-')
   if (!month) return year
   if (day) {
-    return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(Date.UTC(year, Number(month) - 1, Number(day))))
+    return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, Number(month) - 1, Number(day))))
   }
-  return new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric' }).format(new Date(Date.UTC(year, Number(month) - 1, 1)))
+  return new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, Number(month) - 1, 1)))
 }
 
 function getBookStatusMeta(book) {
@@ -432,19 +426,56 @@ function ProjectsPage() {
   )
 }
 
-export default function App() {
-  const [route, setRoute] = useState(getRoute)
+function NotFoundPage() {
+  return (
+    <main className="page-shell inner-page">
+      <div className="page-heading">
+        <div><Eyebrow>404</Eyebrow><h1>Page not found</h1></div>
+      </div>
+      <p className="not-found-text">The page you're looking for doesn't exist or has moved.</p>
+      <Link className="learn-link" to={ROUTES.home}>Back to home</Link>
+    </main>
+  )
+}
 
-  useEffect(() => {
-    const updateRoute = () => setRoute(getRoute())
-    window.addEventListener('hashchange', updateRoute)
-    return () => window.removeEventListener('hashchange', updateRoute)
+// `initialPath` comes from the pre-render (server) or the browser (main.jsx)
+// and must be the same on both sides so React can hydrate the HTML.
+export default function App({ initialPath }) {
+  const [pathname, setPathname] = useState(initialPath)
+  // Pages only fade in when the visitor moves between them, not on first
+  // load, so the pre-rendered content is visible in the very first paint.
+  const [animateRoute, setAnimateRoute] = useState(false)
+  const route = resolvePage(pathname)
+  const routeRef = useRef(route)
+  routeRef.current = route
+
+  const showLocation = useCallback(() => {
+    const next = window.location.pathname
+    if (resolvePage(next) !== routeRef.current) setAnimateRoute(true)
+    setPathname(next)
   }, [])
 
-  const navigate = (nextRoute) => {
-    if (window.location.hash !== `#${nextRoute}`) window.location.hash = nextRoute
-    setRoute(nextRoute)
-  }
+  const navigate = useCallback((href) => {
+    const next = new URL(href, window.location.href)
+    // Like the old hash links, clicking the current page doesn't add history.
+    if (next.href === window.location.href) return
+    const pageChanges = resolvePage(next.pathname) !== routeRef.current
+    window.history.pushState(null, '', next.pathname + next.search + next.hash)
+    showLocation()
+    if (pageChanges) window.scrollTo(0, 0)
+  }, [showLocation])
+
+  // Browser back/forward between pages visited in this tab.
+  useEffect(() => {
+    window.addEventListener('popstate', showLocation)
+    return () => window.removeEventListener('popstate', showLocation)
+  }, [showLocation])
+
+  // Keep <title>, description, canonical and Open Graph tags in step with
+  // in-app navigation (the pre-rendered HTML already has the right ones).
+  useEffect(() => {
+    applyHead(getHead(route))
+  }, [route])
 
   const [scrollProgress, setScrollProgress] = useState(0)
 
@@ -459,5 +490,7 @@ export default function App() {
     return () => { window.removeEventListener('scroll', updateProgress); window.removeEventListener('resize', updateProgress) }
   }, [route])
 
-  return <div className="app"><div className="scroll-progress" style={{ height: `${scrollProgress}%` }} aria-hidden="true" /><Header route={route} onNavigate={navigate} /><div className="route-view" key={route}>{route === 'home' && <HomePage />}{route === 'books' && <BooksPage />}{route === 'projects' && <ProjectsPage />}</div></div>
+  const router = useMemo(() => ({ navigate }), [navigate])
+
+  return <RouterContext.Provider value={router}><div className="app"><div className="scroll-progress" style={{ height: `${scrollProgress}%` }} aria-hidden="true" /><Header route={route} /><div className={animateRoute ? 'route-view animate' : 'route-view'} key={route}>{route === 'home' && <HomePage />}{route === 'books' && <BooksPage />}{route === 'projects' && <ProjectsPage />}{route === 'notFound' && <NotFoundPage />}</div></div></RouterContext.Provider>
 }
