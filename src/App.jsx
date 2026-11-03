@@ -163,21 +163,21 @@ function BookCover({ book, selected, onSelect, animationDelay }) {
   )
 }
 
-function NotesPanel({ book, onClose, panelRef }) {
+function SummaryPanel({ book, onClose, panelRef }) {
   const bookMeta = getBookStatusMeta(book)
 
   return (
-    <aside className="notes-panel" ref={panelRef} aria-label={`Notes for ${book.title}`}>
+    <aside className="summary-panel" ref={panelRef} aria-label={`Summary for ${book.title}`}>
       <Img src={book.cover} variant="sm" alt="" width="164" height="219" decoding="async" />
-      <div className="notes-content">
-        <div className="notes-heading">
-          <Eyebrow>Notes</Eyebrow>
-          <button className="icon-button" type="button" onClick={onClose} aria-label="Close notes">×</button>
+      <div className="summary-content">
+        <div className="summary-heading">
+          <Eyebrow>Summary</Eyebrow>
+          <button className="icon-button" type="button" onClick={onClose} aria-label="Close summary">×</button>
         </div>
         <h3>{book.title}</h3>
         <p className="muted">{book.author}</p>
         <div className="small-rule" />
-        {book.notes ? <p className="notes-text">{book.notes}</p> : <p className="no-notes-state">No notes yet.</p>}
+        {book.summary ? <p className="summary-text">{book.summary}</p> : <p className="no-summary-state">No summary yet.</p>}
         <p className="book-meta">{bookMeta}</p>
       </div>
     </aside>
@@ -222,13 +222,13 @@ function BooksPage() {
   const [selectedBook, setSelectedBook] = useState(null)
   const [selectionVersion, setSelectionVersion] = useState(0)
   const shelfRef = useRef(null)
-  const notesPanelRef = useRef(null)
+  const summaryPanelRef = useRef(null)
   const currentBook = books.find((book) => book.status === 'reading')
 
   useEffect(() => {
     if (!selectedBook) return undefined
     const frame = window.requestAnimationFrame(() => {
-      notesPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      summaryPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
     return () => window.cancelAnimationFrame(frame)
   }, [selectedBook, selectionVersion])
@@ -248,7 +248,7 @@ function BooksPage() {
         <div><Eyebrow>Reading List</Eyebrow><h1>Books</h1></div>
       </div>
       <CurrentlyReading book={currentBook} />
-      <p className="shelf-hint">Click a book to read its notes <span aria-hidden="true">—</span></p>
+      <p className="shelf-hint">Click a book to read its summary <span aria-hidden="true">—</span></p>
       <div className="shelf-wrap">
         <button className="shelf-arrow left" type="button" onClick={() => scrollShelf(-320)} aria-label="Scroll books left">‹</button>
         <div className="book-shelf" ref={shelfRef}>
@@ -256,7 +256,7 @@ function BooksPage() {
         </div>
         <button className="shelf-arrow right" type="button" onClick={() => scrollShelf(320)} aria-label="Scroll books right">›</button>
       </div>
-      {selected && <NotesPanel book={selected} panelRef={notesPanelRef} onClose={() => setSelectedBook(null)} />}
+      {selected && <SummaryPanel book={selected} panelRef={summaryPanelRef} onClose={() => setSelectedBook(null)} />}
     </main>
   )
 }
