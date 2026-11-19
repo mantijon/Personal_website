@@ -68,6 +68,11 @@
     "md": "/projects/photo_2-md.webp",
     "thumb": "/projects/photo_2-thumb.webp"
   },
+  "/projects/places.jpg": {
+    "lg": "/projects/places-lg.webp",
+    "md": "/projects/places-md.webp",
+    "thumb": "/projects/places-thumb.webp"
+  },
   "/projects/shanbalik_1.jpg": {
     "lg": "/projects/shanbalik_1-lg.webp",
     "md": "/projects/shanbalik_1-md.webp",
